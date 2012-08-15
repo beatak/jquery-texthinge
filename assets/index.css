@@ -1,0 +1,29 @@
+.container {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 300px;
+  overflow: hidden;
+  background-color: #ccc;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+#serif {
+  font-size: 24px;
+  line-height: 1.4;
+  font-family: Georgia, serif;
+
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+#sans-serif {
+  font-size: 32px;
+  line-height: 1.2;
+  font-family: Helvetica, Arial, sans-serif;
+
+  position: absolute;
+  top: 10px;
+  left: 320px;
+}
