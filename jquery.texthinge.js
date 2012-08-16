@@ -29,6 +29,7 @@ var init = function (_i, elm, opts, ns) {
   var arr = [];
   var hinges = [0];
   var isCallback = typeof opts.callback === 'function';
+  var isFinish = typeof opts.finish === 'function';
 
   if (!inst.measure) {
     inst.measure = createMeasure(elm);
@@ -37,7 +38,7 @@ var init = function (_i, elm, opts, ns) {
   inst.measure.innerHTML = '';
   $measure = $(inst.measure);
 
-  for (i = 0; i < len; ++i) {
+  loop:for (i = 0; i < len; ++i) {
     if (0 !== i && ' ' === text[i]) {
       arr.push(i);
     }
@@ -48,7 +49,12 @@ var init = function (_i, elm, opts, ns) {
       fragment = text.substring(hinges[hinges.length - 1], hinge_index + 1);
       if (isCallback) {
         if (! opts.callback.apply(elm, [fragment, hinges.length - 1]) ) {
-          isCallback = false;
+          if (isFinish) {
+            isCallback = false;
+          }
+          else {
+            break loop;
+          }
         }
       }
       $measure.html('');
@@ -56,7 +62,7 @@ var init = function (_i, elm, opts, ns) {
       i = hinge_index;
     }
   }
-  if (typeof opts.finish === 'function') {
+  if (isFinish) {
     opts.finish.apply(elm, [text, hinges]);
   }
   cleanup(ns);
@@ -95,9 +101,9 @@ $.fn.texthinge = function (_o) {
   var inst = instance[ns] = {length: this.length, counter: 0};
 
   return this.each(
-	  function (i, elm) {
-		  init(i, elm, opts, ns);
-	  }
+    function (i, elm) {
+      init(i, elm, opts, ns);
+    }
   );
 };
 
