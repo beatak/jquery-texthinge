@@ -1,4 +1,6 @@
-(function ($, window) {
+(function ($, window, document) {
+
+"use strict";
 
 var DEFAULTS = {
   callback: null,
@@ -6,18 +8,18 @@ var DEFAULTS = {
 };
 
 var DEFAULT_CSS = {
-	position: 'absolute',
-	top: '0',
-	left: '0',
-	display: 'block',
-	visibility: 'hidden'
+  position: 'absolute',
+  top: '0',
+  left: '0',
+  display: 'block',
+  visibility: 'hidden'
 };
 
 var instance = {};
 
 var dup_property = ['font-family', 'font-style', 'font-variant', 'font-weight', 'font-size', 'font-size-adjust', 'font-stretch', 'word-spacing', 'letter-spacing', 'text-decoration', 'text-transform', 'line-height'];
 
-var init = function (i, elm, opts, ns) {
+var init = function (_i, elm, opts, ns) {
   var inst = instance[ns];
   var $measure, i, hinge_index, fragment;
   var $elm = $(elm);
@@ -35,26 +37,27 @@ var init = function (i, elm, opts, ns) {
   inst.measure.innerHTML = '';
   $measure = $(inst.measure);
 
-  loop:for (i = 0; i < len; ++i) {
+  for (i = 0; i < len; ++i) {
     if (0 !== i && ' ' === text[i]) {
       arr.push(i);
     }
     $measure.append(text[i]);
+
     if (width < $measure.width()) {
       hinge_index = arr[arr.length - 1];
-      fragment = text.substring(hinges[hinges.length - 1], hinge_index);
+      fragment = text.substring(hinges[hinges.length - 1], hinge_index + 1);
       if (isCallback) {
-        if (! opts.callback.apply(elm, [fragment, hinges.length]) ) {
-          break loop;
+        if (! opts.callback.apply(elm, [fragment, hinges.length - 1]) ) {
+          isCallback = false;
         }
       }
       $measure.html('');
-      hinges.push(hinge_index);
-      i = hinge_index + 1;
+      hinges.push(hinge_index + 1);
+      i = hinge_index;
     }
   }
   if (typeof opts.finish === 'function') {
-    opts.finish(hinges);
+    opts.finish.apply(elm, [text, hinges]);
   }
   cleanup(ns);
 };
@@ -87,15 +90,15 @@ var cleanup = function (ns) {
 };
 
 $.fn.texthinge = function (_o) {
-	var opts = $.extend({}, DEFAULTS, _o || {});
-	var ns = 'th' + ('' + (new Date()).valueOf()).slice(-6);
-	var inst = instance[ns] = {length: this.length, counter: 0};
+  var opts = $.extend({}, DEFAULTS, _o || {});
+  var ns = 'th' + ('' + (new Date()).valueOf()).slice(-6);
+  var inst = instance[ns] = {length: this.length, counter: 0};
 
-	return this.each(
-		function (i, elm) {
-			init(i, elm, opts, ns);
-		}
-	);
+  return this.each(
+	  function (i, elm) {
+		  init(i, elm, opts, ns);
+	  }
+  );
 };
 
-})(jQuery, window);
+})(jQuery, window, document);
