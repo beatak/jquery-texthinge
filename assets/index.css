@@ -19,11 +19,21 @@
 }
 
 #sans-serif {
-  font-size: 32px;
+  font-size: 20px;
   line-height: 1.2;
   font-family: Helvetica, Arial, sans-serif;
 
   position: absolute;
   top: 10px;
   left: 320px;
+}
+
+#comic-sans {
+  font-size: 32px;
+  line-height: 1.2;
+  font-family: "Comic Sans", "Comic Sans MS", cursive;
+
+  position: absolute;
+  top: 10px;
+  left: 640px;
 }
