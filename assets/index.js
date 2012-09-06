@@ -15,7 +15,7 @@
           var text = this.innerHTML;
           $(this).html(
             [
-              text.substring(0, textfragment.length), '<br />', 
+              $.trim(text.substring(0, textfragment.length)), '<br />', 
               text.slice(textfragment.length)
             ].join('')
           );
@@ -37,8 +37,8 @@
           }
           else {
             this.innerHTML = [
-              firstline, '<br />', 
-              textfragment, '<br />', 
+              $.trim(firstline), '<br />', 
+              $.trim(textfragment), '<br />', 
               this.innerHTML.slice(firstline.length + textfragment.length)
             ].join('');
           }
@@ -70,12 +70,9 @@
           console.log(text);
           var result = [];
           for (var i = 0, len = arr.length; i < len; ++i) {
+            result.push( $.trim(text.substring(arr[i], arr[i + 1])) );
             if (i < len - 1) {
-              result.push( text.substring(arr[i], arr[i + 1]));
               result.push( '<br />');
-            }
-            else {
-              result.push( text.substring(arr[i], arr[i + 1]));
             }
           }
           this.innerHTML = result.join('');
