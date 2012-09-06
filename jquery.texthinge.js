@@ -176,7 +176,7 @@ var init = function (_i, elm, opts, ns) {
   var $measure, i, hinge_index, fragment;
   var $elm = $(elm);
   var width = $elm.width();
-  var text = $.trim($elm.text());
+  var text = $.trim($elm.html());
   var len = text.length;
   var arr = [];
   var hinges = [0];
