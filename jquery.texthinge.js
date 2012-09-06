@@ -24,7 +24,7 @@ var REGEX_TAG = /<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/;
 var eachHtmlChar = function (str, cb, opt) {
   var type_arg0 = typeof str;
   var isCallback = true;
-  var i, len, next;
+  var i, len, next, cbr;
   var result = [];
   var opt_entity = COUNT_AS_ONE;
   var opt_tag = COUNT_AS_ONE;
@@ -68,8 +68,14 @@ var eachHtmlChar = function (str, cb, opt) {
     next = getNext(str.slice(i), opt_entity, opt_tag);
     if (next.word !== null) {
       result.push(next.word);
-      if (isCallback && cb(i, next.word) === false) {
-        break loop;
+      if (isCallback) {
+        cbr = cb(i, next.word);
+        if (false === cbr) {
+          break loop;
+        }
+        else if ('number' === typeof cbr && cbr !== 0) {
+          i += cbr;
+        }
       }
     }
     i += next.incr;
@@ -187,13 +193,14 @@ var init = function (_i, elm, opts, ns) {
   eachHtmlChar(
     text,
     function (i, word) {
+      var new_hinge;
       if (0 !== i && ' ' === word) {
         arr.push(i);
       }
       $measure.append(word);
       
       if (width < $measure.width()) {
-        hinge_index = arr[arr.length - 1];
+        hinge_index = arr.length > 1 ? arr[arr.length - 1] : -1;
         fragment = text.substring(hinges[hinges.length - 1], hinge_index + 1);
         if (isCallback) {
           if (! opts.callback.apply(elm, [fragment, hinges.length - 1]) ) {
@@ -206,8 +213,19 @@ var init = function (_i, elm, opts, ns) {
           }
         }
         $measure.html('');
-        hinges.push(hinge_index + 1);
-        i = hinge_index;
+
+        // so now findout index minipulation!
+        new_hinge = hinge_index + 1;
+        if (new_hinge > hinges[hinges.length - 1]) {
+          hinges.push(new_hinge);
+          return hinge_index - i;
+        }
+        else {
+          new_hinge = i - 1;
+          arr.push(new_hinge);
+          hinges.push(new_hinge);
+          return new_hinge - i;
+        }
       }
     }
   );
