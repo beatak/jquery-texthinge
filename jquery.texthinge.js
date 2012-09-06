@@ -103,6 +103,7 @@ $.fn.texthinge = function (_o) {
   return this.each(
     function (i, elm) {
       init(i, elm, opts, ns);
+      return elm;
     }
   );
 };
