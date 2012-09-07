@@ -173,12 +173,12 @@ var dup_property = ['font-family', 'font-style', 'font-variant', 'font-weight', 
 
 var init = function (_i, elm, opts, ns) {
   var inst = instance[ns];
-  var $measure, i, hinge_index, fragment;
+  var $measure;
   var $elm = $(elm);
   var width = $elm.width();
   var text = $.trim($elm.html());
   var len = text.length;
-  var arr = [];
+  var space_indices = [];
   var hinges = [0];
   var isCallback = typeof opts.callback === 'function';
   var isFinish = typeof opts.finish === 'function';
@@ -193,16 +193,28 @@ var init = function (_i, elm, opts, ns) {
   eachHtmlChar(
     text,
     function (i, word) {
-      var new_hinge;
+      var hinge_index, fragment, new_hinge;
+
+      // find space here
       if (0 !== i && ' ' === word) {
-        arr.push(i);
+        space_indices.push(i);
       }
+
+      // insert the word
       $measure.append(word);
-      
       if (width < $measure.width()) {
-        hinge_index = arr.length > 1 ? arr[arr.length - 1] : -1;
-        fragment = text.substring(hinges[hinges.length - 1], hinge_index + 1);
+
+        var last_hinge = hinges[hinges.length - 1];
+        hinge_index = space_indices.length > 1 ? space_indices[space_indices.length - 1] : -1;
+        new_hinge = hinge_index + 1;
+
+        if (last_hinge >= hinge_index) {
+          new_hinge = i - 1;
+          space_indices.push(new_hinge);          
+        }
+
         if (isCallback) {
+          fragment = text.substring(last_hinge, new_hinge);
           if (! opts.callback.apply(elm, [fragment, hinges.length - 1]) ) {
             if (isFinish) {
               isCallback = false;
@@ -212,20 +224,11 @@ var init = function (_i, elm, opts, ns) {
             }
           }
         }
+        hinges.push(new_hinge);
         $measure.html('');
 
-        // so now findout index minipulation!
-        new_hinge = hinge_index + 1;
-        if (new_hinge > hinges[hinges.length - 1]) {
-          hinges.push(new_hinge);
-          return hinge_index - i;
-        }
-        else {
-          new_hinge = i - 1;
-          arr.push(new_hinge);
-          hinges.push(new_hinge);
-          return new_hinge - i;
-        }
+        // index minipulation
+        return new_hinge - i;
       }
     }
   );
