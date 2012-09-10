@@ -23,7 +23,7 @@ var REGEX_TAG = /<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/;
  */
 var eachHtmlChar = function (str, cb, opt) {
   var type_arg0 = typeof str;
-  var isCallback = true;
+  var isCallback = typeof cb === 'function';
   var i, len, next, cbr;
   var result = [];
   var opt_entity = COUNT_AS_ONE;
@@ -38,9 +38,6 @@ var eachHtmlChar = function (str, cb, opt) {
       throw new Error('First argument needs to be a string.');
     }
     str = '' + str;
-  }
-  if (typeof cb !== 'function') {
-    isCallback = false;
   }
   if (typeof opt === 'object') {
     if (opt.entity !== undefined) {
