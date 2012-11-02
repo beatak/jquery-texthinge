@@ -1,0 +1,3 @@
+[submodule "externals/each_html_char-js"]
+	path = externals/each_html_char-js
+	url = git://github.com/beatak/each_html_char-js.git
